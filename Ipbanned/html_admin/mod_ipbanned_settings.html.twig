@@ -17,6 +17,11 @@
                     <label for="ban_day" class="form-label col-3 form-label">{{ 'Days of banned'|trans }}</label>
                     <input id="ban_day" class="form-control" value="{{ params.ban_day }}" name="ban_day">
                 </div>
+                <div class="form-group mb-3">
+                    <label for="white_list" class="form-label col-3 form-label">{{ 'White list'|trans }}</label>
+                    <input id="white_list" class="form-control" value="{{ params.white_list }}" name="white_list">
+                    <p>{{ "For multiple IP addresses, separate with a comma"|trans }}</p>
+                </div>
             </div>
             <div class="card-footer text-end">
                 <button class="btn btn-primary" type="submit">{{ 'Update'|trans }}</button>

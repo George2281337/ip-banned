@@ -45,7 +45,7 @@ class Admin implements \FOSSBilling\InjectionAwareInterface
     {
         $app->get('/ipbanned', 'get_index', [], static::class);
     }
-    
+
 
     public function get_index(\Box_App $app)
     {

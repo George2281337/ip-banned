@@ -37,14 +37,15 @@ class Service implements InjectionAwareInterface
         return true;
     }
 
-    public function getSearchQuery($data,$sql = 'SELECT *'){
-        $sql.= ' FROM ip_attempts';
+    public function getSearchQuery($data, $sql = 'SELECT *')
+    {
+        $sql .= ' FROM ip_attempts';
         $ipAddress = (isset($data['search']) && !empty($data['search'])) ? $data['search'] : null;
         $where = [];
         $params = [];
-        if($ipAddress){
+        if ($ipAddress) {
             $where[] = 'ip_address like :ip ';
-            $params[':ip'] = '%'.$ipAddress.'%';
+            $params[':ip'] = '%' . $ipAddress . '%';
         }
         if (!empty($where)) {
             $sql .= ' WHERE ' . implode(' AND ', $where);
@@ -90,27 +91,30 @@ DROP TABLE IF EXISTS `ip_attempts`;
         $parameters = $event->getParameters();
         $daysBaned = $config['ban_day'];
         $ipAddress = $parameters['ip'];
-        $ipAttempts = $di['db']->findOne('IpAttempts', 'ip_address=:ip', ['ip' => $ipAddress]);
-        if (!is_null($ipAttempts)) {
-            if ($ipAttempts->is_ban == 1) {
-                throw new \Box_Exception('Your IP address is blocked. Please try again later');
+        $whiteList = explode(',', trim($config['white_list']));
+        if (in_array($ipAddress, $whiteList)) {
+            $ipAttempts = $di['db']->findOne('IpAttempts', 'ip_address=:ip', ['ip' => $ipAddress]);
+            if (!is_null($ipAttempts)) {
+                if ($ipAttempts->is_ban == 1) {
+                    throw new \Box_Exception('Your IP address is blocked. Please try again later');
+                }
+                if ($ipAttempts->attempts >= $config['attempts']) {
+                    $ipAttempts->is_ban = 1;
+                    $ipAttempts->expires_at = date('Y-m-d H:i:s', strtotime("+ $daysBaned day"));
+                    $di['db']->store($ipAttempts);
+                    throw new \Box_Exception('Your IP address is blocked. Please try again later');
+                }
+                $ipAttempts->attempts += 1;
+                $ipAttempts->updated_at = date('Y-m-d H:s:i');
+            } else {
+                $ipAttempts = $di['db']->dispense('IpAttempts');
+                $ipAttempts->ip_address = $ipAddress;
+                $ipAttempts->attempts = 1;
+                $ipAttempts->updated_at = date('Y-m-d H:s:i');
+                $ipAttempts->created_at = date('Y-m-d H:s:i');
             }
-            if ($ipAttempts->attempts >= $config['attempts']) {
-                $ipAttempts->is_ban = 1;
-                $ipAttempts->expires_at = date('Y-m-d H:i:s', strtotime("+ $daysBaned day"));
-                $di['db']->store($ipAttempts);
-                throw new \Box_Exception('Your IP address is blocked. Please try again later');
-            }
-            $ipAttempts->attempts += 1;
-            $ipAttempts->updated_at = date('Y-m-d H:s:i');
-        } else {
-            $ipAttempts = $di['db']->dispense('IpAttempts');
-            $ipAttempts->ip_address = $ipAddress;
-            $ipAttempts->attempts = 1;
-            $ipAttempts->updated_at = date('Y-m-d H:s:i');
-            $ipAttempts->created_at = date('Y-m-d H:s:i');
+            $di['db']->store($ipAttempts);
         }
-        $di['db']->store($ipAttempts);
     }
 
 }

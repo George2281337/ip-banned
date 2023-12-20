@@ -1,6 +1,4 @@
-# ip-banned
-
-## Module for FOSSBilling to protect against brute force.
+# Module for FOSSBilling to protect against brute force.
 This module blocks IP addresses if the user makes a mistake n number of times
 
 # Install

@@ -49,18 +49,7 @@ class Admin implements \FOSSBilling\InjectionAwareInterface
 
     public function delete(\Box_App $app, $id)
     {
-        /**
-         * @var Service $systemService
-         */
-        $systemService = $this->di['mod_service']('system');
-        try {
-            $ipAttempt = $this->di['db']->getExistingModelById('IpAttempts', $id, 'IP Address not found');
-            $this->di['db']->trash($ipAttempt);
-            $systemService->setAlertsMessages(__trans('IP address delete from ban list'),'success');
-        } catch (\Exception $exception) {
-            $systemService->setAlertsMessages($exception->getMessage(),'error');
-        }
-            return $app->redirect('/ipbanned');
+
 
     }
 

@@ -1,0 +1,8 @@
+{
+  "id": "ipbanned",
+  "type": "mod",
+  "name": "IP Banned",
+  "description": "Limited authorization attempts",
+  "icon_url": "icon.svg",
+  "version": "1.0.0"
+}

@@ -1,0 +1,26 @@
+{% extends request.ajax ? 'layout_blank.html.twig' : 'layout_default.html.twig' %}
+{% block meta_title %}{{ 'IP Banned'|trans }}{% endblock %}
+{% block content %}
+    <div class="card">
+        <form method="post" action="{{ 'api/admin/extension/config_save'|link }}" class="api-form"
+              data-api-msg="{{ 'Configuration updated'|trans }}">
+            <input type="hidden" name="ext" value="mod_ipbanned">
+            <div class="card-body">
+                <h3 class="card-title">{{ 'IP Banned settings'|trans }}</h3>
+                {% set params = admin.extension_config_get({ 'ext': 'mod_ipbanned' }) %}
+                <input type="hidden" name="CSRFToken" value="{{ CSRFToken }}"/>
+                <div class="form-group mb-3">
+                    <label for="attempts" class="form-label col-3 form-label">{{ 'Attempts'|trans }}</label>
+                    <input id="attempts" class="form-control" value="{{ params.attempts }}" name="attempts">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="ban_day" class="form-label col-3 form-label">{{ 'Days of banned'|trans }}</label>
+                    <input id="ban_day" class="form-control" value="{{ params.ban_day }}" name="ban_day">
+                </div>
+            </div>
+            <div class="card-footer text-end">
+                <button class="btn btn-primary" type="submit">{{ 'Update'|trans }}</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

@@ -92,7 +92,7 @@ DROP TABLE IF EXISTS `ip_attempts`;
         $daysBaned = $config['ban_day'];
         $ipAddress = $parameters['ip'];
         $whiteList = explode(',', trim($config['white_list']));
-        if (in_array($ipAddress, $whiteList)) {
+        if (!in_array($ipAddress, $whiteList)) {
             $ipAttempts = $di['db']->findOne('IpAttempts', 'ip_address=:ip', ['ip' => $ipAddress]);
             if (!is_null($ipAttempts)) {
                 if ($ipAttempts->is_ban == 1) {
